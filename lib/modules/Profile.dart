@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+
+class Profile extends StatelessWidget {
+  const Profile({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        child: Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 28,
+            color: Colors.blueGrey.shade200,
+          ),
+        ),
+      ),
+    );
+  }
+}
