@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(todo_app LANGUAGES CXX)
+project(task_manger LANGUAGES CXX)
 
-set(BINARY_NAME "todo_app")
+set(BINARY_NAME "task_manger")
 
 cmake_policy(SET CMP0063 NEW)
 

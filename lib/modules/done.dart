@@ -10,14 +10,7 @@ class Done extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(22.0),
            child:  Container(
-             child: Text(
-               'Done',
-               style: TextStyle(
-                 fontWeight: FontWeight.bold,
-                 fontSize: 28,
-                 color: Colors.blueGrey.shade200,
-               ),
-             ),
+
            ),
       ),
             );

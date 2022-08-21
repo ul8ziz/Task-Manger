@@ -1,6 +1,6 @@
 {
-    "name": "todo_app",
-    "short_name": "todo_app",
+    "name": "task_manger",
+    "short_name": "task_manger",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
