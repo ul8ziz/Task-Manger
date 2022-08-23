@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manger/shared/cubit/cubit.dart';
 
 void navigateTo(context, widget) =>
     Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
@@ -170,7 +171,7 @@ Widget ul8zizSizeblBox({
       height: height,
     );
 
-Widget ul8zizListItem(Map model) => Padding(
+Widget ul8zizListItem(Map model,context) => Padding(
       padding: const EdgeInsets.all(20.0),
       child: Row(
         children: [
@@ -181,29 +182,46 @@ Widget ul8zizListItem(Map model) => Padding(
           SizedBox(
             width: 20.0,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '${model['title']}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              SizedBox(
-                height: 5.0,
-              ),
-              Text(
-                '${model['date']}',
-                style: TextStyle(
-                    fontSize: 16,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${model['title']}',
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey),
-              )
-            ],
-          )
+                    fontSize: 20,
+                  ),
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Text(
+                  '${model['date']}',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey),
+                ),
+                SizedBox(width: 5.0,),
+
+              ],
+            ),
+          ),
+          IconButton(onPressed: ()
+          {
+            AppCubit.get(context).updateDate(status: 'done', id: model['id'],);
+          },
+              icon: Icon(Icons.check_circle_outline_sharp,
+              color: Colors.green)
+          ),
+          IconButton(onPressed: ()
+          {
+            AppCubit.get(context).updateDate(status: 'done', id: model['id'],);
+
+          },
+              icon: Icon(Icons.archive,color: Colors.black45,))
         ],
       ),
     );

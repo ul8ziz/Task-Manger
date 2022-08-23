@@ -11,24 +11,29 @@ import 'package:flutter/material.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
-
   static AppCubit get(context) => BlocProvider.of(context);
   int currenindxe = 0;
 
-  List<Widget> screens = [
+  List<Map>tasks=[];
+
+  List<Widget> screens =
+  [
     Tasks(),
     Done(),
     Archive(),
     Profile(),
   ];
-  List<String> titles = [
+
+  List<String> titles =
+  [
     "New tasks",
     "Done Tasks",
     "Archived Tasks",
     "Profile",
   ];
 
-  void changIndex(int index) {
+  void changIndex(int index)
+  {
     currenindxe = index;
     emit(AppChangeBottomNavBar());
   }
@@ -36,7 +41,8 @@ class AppCubit extends Cubit<AppStates> {
   late Database database;
 
 //////createDatabase
-  void createDatabase() {
+  void createDatabase()
+  {
     openDatabase(
       'todo.db',
       version: 1,
@@ -53,29 +59,39 @@ class AppCubit extends Cubit<AppStates> {
       onOpen: (database) {
         getDateFormDatabse(database).then((value) {
           tasks = value;
+          print(tasks);
           emit(AppGetDbState());
        }
         );
         print('Database Opened');
       },
-    ).then((value) {
+    ).then((value)
+    {
       database = value;
       emit(AppCreateDbState());
     });
   }
 
 /////////// inserttoDatabase
-  Future inserttoDatabase({
+   inserttoDatabase({
     required String title,
     required String time,
     required String date,
-  }) async {
-    String sqlInsert = 'INSERT INTO tasks(title ,date,time,status)'
-        'VALUES("$title","$date","$time","new")';
-    return await database.transaction((txn) async {
-      await txn.rawInsert(sqlInsert).then((value) {
+  }) async
+  {
+    String sqlInsert = 'INSERT INTO tasks(title ,date,time,status)''VALUES("$title","$date","$time","new")';
+     await database.transaction((txn) async {
+       txn.rawInsert(sqlInsert)
+          .then((value)
+       {
+        emit(AppInserteDbState());
         print('$value inserted Successfully');
-        print('${"$title  " "$time  " " $date"}');
+        ////////////GetDate
+        getDateFormDatabse(database).then((value)
+        {
+          tasks=value;
+          emit(AppGetDbState());
+        });
       }).catchError((error) {
         print('Error in inserting record${error.toString()}');
       });
@@ -83,9 +99,38 @@ class AppCubit extends Cubit<AppStates> {
   }
 
 /////////getDateFormDatabse
-  Future<List<Map>> getDateFormDatabse(database) async {
+  Future<List<Map>> getDateFormDatabse(database) async
+  {
+    emit(AppGetDatabesLoadingState());
     var sql = 'SELECT * FROM tasks ';
     return await database.rawQuery(sql);
-    //
+  }
+
+  bool isBootomshow = false;
+  IconData botmicon = Icons.edit;
+  void changeBottomSheetState({
+    required bool isShow,
+    required IconData icon,
+})
+  {
+    isBootomshow=isShow;
+    botmicon=icon;
+    emit(AppChangeBottomSheetState());
+  }
+
+
+  void updateDate({
+    required String status,
+    required int id,
+})
+  async
+  {
+   database.rawUpdate(
+        'UPDATE tasks SET status = ?,  WHERE id = ?',
+        ['$status', id]).then((value) {
+         emit(AppUpdateDbState());
+
+   });
   }
 }
+

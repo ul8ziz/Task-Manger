@@ -13,15 +13,18 @@ class Home extends StatelessWidget {
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
 
-  bool isBootomshow = false;
-  IconData botmicon = Icons.edit;
+
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (BuildContext context) => AppCubit()..createDatabase(),
       child: BlocConsumer<AppCubit, AppStates>(
-        listener: (BuildContext context, AppStates states) {},
+        listener: (BuildContext context, AppStates states) {
+          if(states is AppInserteDbState){
+            Navigator.pop(context);
+          }
+        },
         builder: (BuildContext context, AppStates states) {
           AppCubit cubit=AppCubit.get(context);
           return Scaffold(
@@ -31,22 +34,24 @@ class Home extends StatelessWidget {
                   cubit.titles[cubit.currenindxe]),
             ),
             body: cubit.screens[cubit.currenindxe],
+            //Condition: state is !AppGetDatabesLoadingState,
+            //Bulder:(context)=>cubit.screens[cuibit]
+            //fallback:(context)=>Center(child:CircularprogressIn
             floatingActionButton: Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 10, 25.0),
                 child: FloatingActionButton(
-                  onPressed: () {
-                    if (isBootomshow) {
+                  onPressed: ()
+                  {
+                    if (cubit.isBootomshow) {
                       if (formKey.currentState!.validate()) {
                         cubit.inserttoDatabase(
                           title: titlController.text,
                           time: timeController.text,
                           date: dateController.text,
                         ).then((value) {
-                          Navigator.pop(context);
-                          isBootomshow = false;
-                          // setState(() {
-                          //   botmicon = Icons.edit;
-                          // });
+                         // Navigator.pop(context);
+                          cubit.changeBottomSheetState(
+                              isShow: false, icon: Icons.edit);
                         });
                       }
                     } else {
@@ -57,7 +62,8 @@ class Home extends StatelessWidget {
                                 padding: EdgeInsets.all(20.0),
                                 child: Form(
                                   key: formKey,
-                                  child: Column(
+                                  child: Column
+                                    (
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       ul8zizFormField(
@@ -131,18 +137,13 @@ class Home extends StatelessWidget {
                               ))
                           .closed
                           .then((value) {
-                        isBootomshow = false;
-                        // setState(() {
-                        //   botmicon = Icons.edit;
-                        // });
+                        cubit.changeBottomSheetState(isShow: false, icon: Icons.edit);
                       });
-                      isBootomshow = true;
-                      // setState(() {
-                      //   botmicon = Icons.add;
+                      cubit.changeBottomSheetState(isShow: true, icon: Icons.add);
                       // });
                     }
                   },
-                  child: Icon(botmicon),
+                  child: Icon(cubit.botmicon),
                 )),
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
