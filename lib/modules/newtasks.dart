@@ -14,18 +14,9 @@ class Tasks extends StatelessWidget {
   return BlocConsumer<AppCubit,AppStates>(
       listener: (context,state){},
       builder: (context,state){
-        var tasks=AppCubit.get(context).tasks;
-        return ListView.separated(
-          itemBuilder: (context,index)=>ul8zizListItem(tasks[index],context),
-          separatorBuilder: (context,index)=>Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              width: 2.0,
-              height: 1.0,
-              color: Colors.grey[300],
-            ),
-          ),
-          itemCount: tasks.length,
+        var tasks=AppCubit.get(context).newTasks;
+        return tasksBuilder(
+          tasks: tasks,
         );
       },
   );

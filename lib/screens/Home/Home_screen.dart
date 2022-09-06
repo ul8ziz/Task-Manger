@@ -50,14 +50,14 @@ class Home extends StatelessWidget {
                           date: dateController.text,
                         ).then((value) {
                          // Navigator.pop(context);
-                          cubit.changeBottomSheetState(
-                              isShow: false, icon: Icons.edit);
+                          cubit.changeBottomSheetState(isShow: false, icon: Icons.edit);
                         });
                       }
                     } else {
-                      scaffoldKey.currentState
-                          ?.showBottomSheet((context) => Container(
-                                // margin: EdgeInsets.all(15),
+                      titlController.text='';
+                      timeController.text='';
+                      dateController.text='';
+                      scaffoldKey.currentState?.showBottomSheet((context) => Container(
                                 color: Colors.blueGrey[50],
                                 padding: EdgeInsets.all(20.0),
                                 child: Form(
@@ -137,6 +137,8 @@ class Home extends StatelessWidget {
                               ))
                           .closed
                           .then((value) {
+                      //  Navigator.pop(context);
+
                         cubit.changeBottomSheetState(isShow: false, icon: Icons.edit);
                       });
                       cubit.changeBottomSheetState(isShow: true, icon: Icons.add);

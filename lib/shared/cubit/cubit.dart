@@ -5,7 +5,7 @@ import 'package:task_manger/shared/cubit/states.dart';
 import '../../modules/Archive.dart';
 import '../../modules/Profile.dart';
 import '../../modules/done.dart';
-import '../../modules/tasks.dart';
+import '../../modules/newtasks.dart';
 import '../components/conastants.dart';
 import 'package:flutter/material.dart';
 
@@ -39,6 +39,9 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   late Database database;
+  List<Map> newTasks=[];
+  List<Map> doneTasks=[];
+  List<Map> archiveTasks=[];
 
 //////createDatabase
   void createDatabase()
@@ -57,12 +60,8 @@ class AppCubit extends Cubit<AppStates> {
         });
       },
       onOpen: (database) {
-        getDateFormDatabse(database).then((value) {
-          tasks = value;
-          print(tasks);
-          emit(AppGetDbState());
-       }
-        );
+        getDateFormDatabse(database);
+        emit(AppGetDateFormDatabseState());
         print('Database Opened');
       },
     ).then((value)
@@ -86,28 +85,39 @@ class AppCubit extends Cubit<AppStates> {
        {
         emit(AppInserteDbState());
         print('$value inserted Successfully');
-        ////////////GetDate
-        getDateFormDatabse(database).then((value)
-        {
-          tasks=value;
-          emit(AppGetDbState());
-        });
-      }).catchError((error) {
+
+        getDateFormDatabse(database);
+        emit(AppGetDateFormDatabseState());
+
+       }).catchError((error) {
         print('Error in inserting record${error.toString()}');
       });
     });
   }
 
 /////////getDateFormDatabse
-  Future<List<Map>> getDateFormDatabse(database) async
+  void getDateFormDatabse(database)
   {
-    emit(AppGetDatabesLoadingState());
+    newTasks=[];
+    doneTasks=[];
+    archiveTasks=[];
     var sql = 'SELECT * FROM tasks ';
-    return await database.rawQuery(sql);
+     database.rawQuery(sql).then((value) {
+       value.forEach((element) {
+            if(element['status']=='new')
+              newTasks.add(element);
+            else if(element['status']=='done')
+              doneTasks.add(element);
+            else archiveTasks.add(element);
+      });
+       emit(AppGetDateFormDatabseState());
+     }
+     );
   }
 
   bool isBootomshow = false;
   IconData botmicon = Icons.edit;
+
   void changeBottomSheetState({
     required bool isShow,
     required IconData icon,
@@ -126,11 +136,26 @@ class AppCubit extends Cubit<AppStates> {
   async
   {
    database.rawUpdate(
-        'UPDATE tasks SET status = ?,  WHERE id = ?',
-        ['$status', id]).then((value) {
-         emit(AppUpdateDbState());
-
+        'UPDATE tasks SET status = ? WHERE id = ?',
+        [status, id]
+          ).then((value) {
+            getDateFormDatabse(database);
+            emit(AppUpdateDbState());
    });
   }
-}
 
+void deleteDate({
+    required int id,
+})
+  async
+  {
+   database.rawDelete(
+        'DELETE FROM tasks WHERE id = ?', [ id]
+          ).then((value) {
+            getDateFormDatabse(database);
+            emit(AppDeleteDbState());
+   });
+  }
+
+
+}

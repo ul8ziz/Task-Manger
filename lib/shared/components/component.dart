@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:task_manger/shared/cubit/cubit.dart';
 
@@ -12,25 +13,43 @@ void navigateAndFinish(context, widget) => Navigator.pushAndRemoveUntil(
     ),
     (route) => false);
 
-//TextButton
+Widget tasksBuilder({
+  required List<Map> tasks,
+})=>
+    ConditionalBuilder(
+      condition: tasks.length>0,
+      builder: (context)=>
+          ListView.separated(
+            itemBuilder: (context,index)=>ul8zizListItem(tasks[index],context),
+            separatorBuilder: (context,index)=>Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: 2.0,
+                height: 1.0,
+                color: Colors.grey[300],
+              ),
+            ),
+            itemCount: tasks.length,
+          ),
+      fallback: (context)=>Center(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0,180,0,0),
+          child: Column(
+            children: [
 
-// Widget TextButton({
-//   required Function function,
-//   required String text,
-//   required Text child,
-//   Color color=Colors.blue,
-//
-// }) =>
-//     TextButton(
-//
-//       child: Text(
-//         text.toUpperCase(),
-//         style: TextStyle(
-//           color: color,
-//         ),
-//       ),
-//     );
-
+              Icon(Icons.menu_outlined,
+                size: 200.0
+                ,color: Colors.red.shade300,),
+              Text('Not Tasks Yet, Add Some Tasks',style: TextStyle(
+                color: Colors.grey,
+                fontWeight: FontWeight.bold,
+                fontSize: 18
+              ),),
+            ],
+          ),
+        ),
+      ),
+    );
 // TextBoxField
 
 Widget ul8zizTextBox({
@@ -171,57 +190,72 @@ Widget ul8zizSizeblBox({
       height: height,
     );
 
-Widget ul8zizListItem(Map model,context) => Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 40,
-            child: Text('${model['time']}'),
-          ),
-          SizedBox(
-            width: 20.0,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '${model['title']}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-                SizedBox(
-                  height: 5.0,
-                ),
-                Text(
-                  '${model['date']}',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                ),
-                SizedBox(width: 5.0,),
-
-              ],
+Widget ul8zizListItem(Map model, context) => Dismissible(
+      key: Key(model['id'].toString()),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 40,
+              child: Text('${model['time']}'),
             ),
-          ),
-          IconButton(onPressed: ()
-          {
-            AppCubit.get(context).updateDate(status: 'done', id: model['id'],);
-          },
-              icon: Icon(Icons.check_circle_outline_sharp,
-              color: Colors.green)
-          ),
-          IconButton(onPressed: ()
-          {
-            AppCubit.get(context).updateDate(status: 'done', id: model['id'],);
-
-          },
-              icon: Icon(Icons.archive,color: Colors.black45,))
-        ],
+            SizedBox(
+              width: 20.0,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${model['title']}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    '${model['date']}',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey),
+                  ),
+                  SizedBox(
+                    width: 5.0,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+                onPressed: () {
+                  AppCubit.get(context).updateDate(
+                    status: 'done',
+                    id: model['id'],
+                  );
+                },
+                icon: Icon(Icons.check_circle_outline_sharp,
+                    color: Colors.green)),
+            IconButton(
+                onPressed: () {
+                  AppCubit.get(context).updateDate(
+                    status: 'archive',
+                    id: model['id'],
+                  );
+                },
+                icon: Icon(
+                  Icons.archive,
+                  color: Colors.black45,
+                ))
+          ],
+        ),
       ),
-    );
+      onDismissed: (direction)
+      {
+        AppCubit.get(context).deleteDate(id: model['id']);
+      },
+);
